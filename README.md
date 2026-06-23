@@ -9,9 +9,8 @@ DS-MIN is a physics-guided multimodal framework for part-level segmentation of h
 
 | Metric | Value |
 |--------|-------|
-| Params | 0.47 M |
-| Inference memory | ~4.0 GB (peak, single RTX 4090) |
-| Per-sample inference | ~1.1 s (350k pts, 5×TTA) |
+| Inference memory | ~9.0 GB |
+| Per-sample inference | ~0.69 s |
 
 
 ## Quick Start
@@ -19,7 +18,7 @@ DS-MIN is a physics-guided multimodal framework for part-level segmentation of h
 ### Requirements
 
 - Python 3.8+
-- CUDA-capable GPU (6 GB+ VRAM recommended)
+- CUDA-capable GPU (9 GB+ VRAM recommended)
 - [PyTorch](https://pytorch.org) ≥ 2.0
 
 Install dependencies:
@@ -40,13 +39,13 @@ This produces per-scan `.npy` files (13 columns), `_roi.png` RoI masks, and `_no
 
 ### Training & Evaluation
 
-**Single-fold quick check** (all 10 samples, 100 epochs, ~10 min on RTX 4090):
+**Single-fold quick check** ( 10 samples, 100 epochs, ~10 min on RTX 4090):
 
 ```bash
 python train.py
 ```
 
-**Full Leave-One-Out Cross-Validation** (10 × 200 epochs, Table 2 in the paper):
+**Full Leave-One-Out Cross-Validation** (10 × 200 epochs):
 
 ```bash
 python evaluate.py
@@ -92,7 +91,7 @@ The MEPS (Multi-modal Electrode Part Segmentation) dataset consists of 30 struct
 Due to commercial confidentiality, absolute spatial scales and CAD-aligned coordinates are obfuscated. We provide:
 
 - **Anonymised benchmark package**: zero-mean normalised point clouds with local topology and shading information preserved. The normalisation parameters (`_norm.json`) produced by `preprocess_data.py` define the exact mean-centering and max-distance scaling applied. The `.npy` files, RoI masks, and 2D images in `train_data_v2/` and `train_images_v2/` constitute the self-contained benchmark.
-- **Complete evaluation protocol**: `evaluate.py` implements the full LOOCV with the same chunking, TTA voting, and mBIoU boundary-band computation used in the paper.
+- **Complete evaluation protocol**: `evaluate.py` implements the full LOOCV with the same chunking and mBIoU boundary-band computation used in the paper.
 - **Standardised split file**: The LOOCV partition is deterministic — `evaluate.py` iterates over the sorted file list in `train_data_v2/`, holding out exactly one sample per fold. No random train/test splitting is involved.
 
 To reproduce the full experiment on your own data:
@@ -100,7 +99,7 @@ To reproduce the full experiment on your own data:
 1. Collect structured-light scans of homogeneous metallic assemblies with corresponding 2D images.
 2. Annotate point clouds using the 5-class functional label scheme described in Section 4.1.
 3. Run `preprocess_data.py` to generate normalised `.npy` files.
-4. Run `evaluate.py` for LOOCV results matching Table 2.
+4. Run `evaluate.py` for LOOCV results.
 
 
 
